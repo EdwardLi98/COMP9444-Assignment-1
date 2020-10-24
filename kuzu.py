@@ -26,7 +26,7 @@ class NetFull(nn.Module):
 
     def forward(self, x):
         input_tensor = x.view(-1, 28*28)
-        hid_layer = F.tanh(self.fc1(input_tensor))
+        hid_layer = F.sigmoid(self.fc1(input_tensor))
         output = self.fc2(hid_layer)
         return F.log_softmax(output, dim=1)
 
@@ -35,15 +35,15 @@ class NetConv(nn.Module):
     # all using relu, followed by log_softmax
     def __init__(self):
         super(NetConv, self).__init__()
-        self.conv1 = nn.Conv2d(1, 32, 3)
-        self.conv2 = nn.Conv2d(32, 64, 3) 
-        self.fc1 = nn.Linear(24*24*64, 512)
+        self.conv1 = nn.Conv2d(1, 32, 5)
+        self.conv2 = nn.Conv2d(32, 64, 5)
+        self.fc1 = nn.Linear(4*4*64, 512)
         self.fc2 = nn.Linear(512, 10)
 
     def forward(self, x):
-        x = F.relu(self.conv1(x))
-        x = F.relu(self.conv2(x))
-        x = x.view(-1, 24*24*64)
+        x = F.max_pool2d(F.relu(self.conv1(x)), 2, 2)
+        x = F.max_pool2d(F.relu(self.conv2(x)), 2, 2)
+        x = x.view(-1, 4*4*64)
         x = F.relu(self.fc1(x))
-        x = F.log_softmax(self.fc2(x))
-        return x 
+        output = F.log_softmax(self.fc2(x), dim=1)
+        return output 
