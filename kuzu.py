@@ -26,7 +26,7 @@ class NetFull(nn.Module):
 
     def forward(self, x):
         input_tensor = x.view(-1, 28*28)
-        hid_layer = F.sigmoid(self.fc1(input_tensor))
+        hid_layer = F.tanh(self.fc1(input_tensor))
         output = self.fc2(hid_layer)
         return F.log_softmax(output, dim=1)
 
